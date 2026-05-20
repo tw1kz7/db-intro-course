@@ -1,0 +1,30 @@
+-- Завдання:
+--      Вивести список студентів, які мають низькі оцінки (менше 60) разом з інформацією про курс та викладача
+--      Очікувані колонки результату:
+--          - повне ім'я студента (student_name)
+--          - назва групи (group_name)
+--          - назва курсу (course_name)
+--          - оцінка (grade)
+--          - повне ім'я лектора курсу (lecturer_name)
+--      Включити тільки записи, де оцінка вже виставлена
+--      Включити тільки лекторів
+--      Результат відсортувати за:
+--          - оцінкою (зростання), потім за назвою групи, потім за іменем студента, потім за назвою курсу
+
+-- Рішення:
+select 
+    sp.first_name || ' ' || sp.last_name as student_name,
+    sg.name as group_name,
+    c.name as course_name,
+    e.grade,
+    pp.first_name || ' ' || pp.last_name as lecturer_name
+from enrolment e
+join student s on e.student_id = s.student_id
+join person sp on s.person_id = sp.person_id
+join student_group sg on s.group_id = sg.group_id
+join course c on e.course_id = c.course_id
+join course_teacher ct on c.course_id = ct.course_id
+join professor pr on ct.professor_id = pr.professor_id
+join person pp on pr.person_id = pp.person_id
+where e.grade < 60 and ct.professor_role = 'лектор'
+order by e.grade asc, group_name, student_name, course_name;
